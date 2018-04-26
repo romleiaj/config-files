@@ -7,3 +7,7 @@ NOTE: Remember to use these programs:
 - tmuxinator (for easy tmux script writing)
 - chrony or ntpd (for syncing time on different machines)
 - supervisord with cesi (for nice web gui for processes)
+- vim-powerline/airline (used solarized theme)
+- gpakosz/.tmux
+- vimux
+- explore copy and pasting from vim to tmux

@@ -1,6 +1,4 @@
-call plug#begin('~/.vim/plugged')
-Plug 'nightsense/office'
-call plug#end()
+execute pathogen#infect()
 
 function! VisualSelection(direction, extra_filter) range
     let l:saved_reg = @"
@@ -18,6 +16,28 @@ function! VisualSelection(direction, extra_filter) range
     let @/ = l:pattern
     let @" = l:saved_reg
 endfunction
+
+function! WrapForTmux(s)
+  if !exists('$TMUX')
+    return a:s
+  endif
+
+  let tmux_start = "\<Esc>Ptmux;"
+  let tmux_end = "\<Esc>\\"
+
+  return tmux_start . substitute(a:s, "\<Esc>", "\<Esc>\<Esc>", 'g') . tmux_end
+endfunction
+
+let &t_SI .= WrapForTmux("\<Esc>[?2004h")
+let &t_EI .= WrapForTmux("\<Esc>[?2004l")
+
+function! XTermPasteBegin()
+  set pastetoggle=<Esc>[201~
+  set paste
+  return ""
+endfunction
+
+inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
@@ -80,14 +100,12 @@ set tm=500
 syntax enable
 
 " Enable 256 colors palette in Gnome Terminal
-if $COLORTERM == 'gnome-terminal'
-    set t_Co=256
-endif
+let g:solarized_termcolors=256
 
-try
-    colorscheme office-dark
-catch
-endtry
+syntax enable
+set background=dark
+
+colorscheme solarized
 
 " Set utf8 as standard encoding and en_US as the standard language
 set encoding=utf8

@@ -1,5 +1,20 @@
 execute pathogen#infect()
 
+call plug#begin()
+
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'tmhedberg/SimpylFold'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+call plug#end()
+
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
 function! VisualSelection(direction, extra_filter) range
     let l:saved_reg = @"
     execute "normal! vgvy"
@@ -17,27 +32,20 @@ function! VisualSelection(direction, extra_filter) range
     let @" = l:saved_reg
 endfunction
 
-function! WrapForTmux(s)
-  if !exists('$TMUX')
-    return a:s
-  endif
+" Automatically paste without indenting
+" ===============================================================
+let &t_SI .= "\<Esc>[?2004h"
+let &t_EI .= "\<Esc>[?2004l"
 
-  let tmux_start = "\<Esc>Ptmux;"
-  let tmux_end = "\<Esc>\\"
-
-  return tmux_start . substitute(a:s, "\<Esc>", "\<Esc>\<Esc>", 'g') . tmux_end
-endfunction
-
-let &t_SI .= WrapForTmux("\<Esc>[?2004h")
-let &t_EI .= WrapForTmux("\<Esc>[?2004l")
-
-function! XTermPasteBegin()
-  set pastetoggle=<Esc>[201~
-  set paste
-  return ""
-endfunction
+:set backspace=indent,eol,start
 
 inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
+
+function! XTermPasteBegin()
+        set pastetoggle=<Esc>[201~
+            set paste
+                return ""
+            endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
@@ -51,6 +59,9 @@ filetype indent on
 
 " Set to auto read when a file is changed from the outside
 set autoread
+
+" Don't hide json quotes
+set conceallevel=0
 
 " With a map leader it's possible to do extra key combinations
 " like <leader>w saves the current file
@@ -92,6 +103,9 @@ set novisualbell
 set t_vb=
 set tm=500
 
+" replace currently selected text with default register
+" without yanking it
+vnoremap p "_dP
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts
@@ -113,6 +127,10 @@ set encoding=utf8
 " Use Unix as the standard file type
 set ffs=unix,dos,mac
 
+" Enable folding
+set foldmethod=indent
+set foldlevel=99
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -131,6 +149,9 @@ set expandtab
 "          
 set smarttab
 
+" Enable folding with the spacebar
+nnoremap <space> za
+
 " 1 tab == 4 spaces
 set shiftwidth=4
 set tabstop=4
@@ -139,8 +160,8 @@ set tabstop=4
 set lbr
 set tw=500
 
-set ai "Auto indent
-set si "Smart indent
+"set ai "Auto indent
+"set si "Smart indent
 set wrap "Wrap lines
 
 """"""""""""""""""""""""""""""
@@ -193,3 +214,5 @@ set statusline+=\ Buf:%n                    " Buffer number
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Remap VIM 0 to first non-blank character
 map 0 ^
+
+" ========================== COC CONFIG ==============================

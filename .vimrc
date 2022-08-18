@@ -146,7 +146,7 @@ set noswapfile
 set expandtab
 
 " Be smart when using tabs ;)
-"          
+"
 set smarttab
 
 " Enable folding with the spacebar
@@ -216,3 +216,7 @@ set statusline+=\ Buf:%n                    " Buffer number
 map 0 ^
 
 " ========================== COC CONFIG ==============================
+
+# Set default colors to be correct
+set background=dark
+set t_Co=256

@@ -16,6 +16,11 @@ ln -s ${DIR}/.vimrc ~/.vimrc
 source ${DIR}/install_pathogen.sh
 source ${DIR}/install_solarized.sh
 
+cd ~/.vim/bundle
+git clone https://github.com/yhat/vim-docstring.git
+
+cd $DIR
+
 # setup default git
 git config --global user.email "romleiaj@clarkson.edu"
 git config --global user.name  "Adam Romlein"

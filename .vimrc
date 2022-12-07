@@ -2,12 +2,26 @@ execute pathogen#infect()
 
 call plug#begin()
 
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'tmhedberg/SimpylFold'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
+Plug 'deoplete-plugins/deoplete-jedi'
+"Plug 'nvim-lua/completion-nvim'
+" Plug 'wbthomason/packer.nvim'
+" Plug 'neovim/nvim-lspconfig'
 call plug#end()
+
+let g:deoplete#enable_at_startup = 1
+let g:python3_host_prog = '/home/adam/anaconda3/bin/python'
+
+" lua require 'lspconfig'
 
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
@@ -53,6 +67,8 @@ function! XTermPasteBegin()
 " Sets how many lines of history VIM has to remember
 set history=500
 
+autocmd BufWritePre * :%s/\s\+$//e
+
 " Enable filetype plugins
 filetype plugin on
 filetype indent on
@@ -91,6 +107,15 @@ set lazyredraw
 
 " For regular expressions turn magic on
 set magic
+
+" Passthrough Tmux keys
+if &term =~ '^screen'
+    " tmux will send xterm-style keys when its xterm-keys option is on
+    execute "set <xUp>=\e[1;*A"
+    execute "set <xDown>=\e[1;*B"
+    execute "set <xRight>=\e[1;*C"
+    execute "set <xLeft>=\e[1;*D"
+endif
 
 " Show matching brackets when text indicator is over them
 set showmatch
@@ -217,6 +242,28 @@ map 0 ^
 
 " ========================== COC CONFIG ==============================
 
-# Set default colors to be correct
-set background=dark
-set t_Co=256
+" Copy to system clipboard
+set clipboard=unnamedplus
+
+" Mappings to skip to beginning /end of line
+map <C-a> <ESC>^
+imap <C-a> <ESC>I
+map <C-e> <ESC>$
+imap <C-e> <ESC>A
+
+" Use <Tab> and <S-Tab> to navigate through popup menu
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+" Set completeopt to have a better completion experience
+set completeopt=menuone,noinsert,noselect
+
+" Avoid showing message extra message when using completion
+set shortmess+=c
+
+" lua require'lspconfig'.pyright.setup{on_attach=require'completion'.on_attach}
+" Use completion-nvim in every buffer
+" autocmd BufEnter * lua require'completion'.on_attach()
+
+
+source ~/.vim/vimbuddy.vim

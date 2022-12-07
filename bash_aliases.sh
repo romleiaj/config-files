@@ -1,0 +1,22 @@
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+alias dk='docker container kill $(docker container ls -q)'
+alias dls='docker container ls'
+alias tk='tmux kill-server'
+alias gp='git pull --ff-only'
+alias ga='git add'
+alias gst='git status'
+alias ccy='catkin clean -y'
+alias cb='catkin build'
+alias cnt='ls -l $1 | wc -l'
+alias cp='rsync -avH'
+alias rsync='rsync -avH --progress'
+alias du='du -ahd 1 | sort -h'
+alias mux="tmuxinator"
+alias ssh='ssh -A'
+alias podman-compose='podman-compose --podman-run-args="--group-add keep-groups"'
+alias cat='bat --paging=never --style=plain'
+alias vim='nvim'
+
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"

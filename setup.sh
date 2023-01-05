@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 #TODO: Make a swap file
-#TODO: Install batcat, wireguard, tmuxinator, poetry, geeqie, fzf, ansible,
+#TODO: Install anydesk, kazam, microsoft teams, meshlab, docker, qgis, caffeine, batcat, wireguard, tmuxinator, poetry, geeqie, fzf, ansible,
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 

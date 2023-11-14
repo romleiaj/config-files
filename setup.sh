@@ -27,7 +27,9 @@ docker-compose-plugin \
 fish
 
 # Tmux and tmuxinator
-sudo gem install tmuxinator
+#sudo gem install tmuxinator
+# Add tmux package manager
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 # Pip and ansible
 curl -sSL https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py --user

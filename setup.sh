@@ -1,9 +1,6 @@
 #!/usr/bin/bash
 set -e
 
-#TODO: Make a swap file
-#TODO: Install anydesk, kazam, microsoft teams, meshlab, docker, qgis, caffeine, batcat, wireguard, tmuxinator, poetry, geeqie, fzf, ansible,
-
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 sudo add-apt-repository ppa:neovim-ppa/stable
@@ -21,13 +18,13 @@ caffeine \
 wireguard \
 python3-dev \
 python3-setuptools \
+ffmpeg \
 geeqie \
-ruby \
-docker-compose-plugin \
+fd-find \
+ripgrep \
 fish
 
 # Tmux and tmuxinator
-#sudo gem install tmuxinator
 # Add tmux package manager
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
@@ -35,14 +32,11 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 curl -sSL https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py --user
 python3 -m pip install --user ansible
 
-#thefuck
-pip3 install thefuck --user
+# uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# podman-compose
-pip3 install podman-compose
-
-# Poetry
-curl -sSL https://install.python-poetry.org | python3 -
+# ruff install
+uv tool install ruff@latest
 
 # Fuzzy Find
 rm -rf ~/.fzf
@@ -54,38 +48,19 @@ curl -sS https://webi.sh/nerdfont | sh
 
 # Starship install
 curl -sS https://starship.rs/install.sh | sh
+echo "eval "$(starship init bash)"" >> ~/.bashrc
 
-# vim-plug
-sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
-       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-
-# Podman
-#source /etc/os-release
-#sudo sh -c "echo 'deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /' > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list"
-#wget -nv https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_${VERSION_ID}/Release.key -O- | sudo apt-key add -
-#sudo apt-get update -qq -y
-#sudo apt-get -qq --yes install podman
-
-
-mkdir -p ${DIR}/../.vim/bundle
 mkdir -p ${DIR}/../.config/fish/
 
 # Link dotfiles
-ln -s ${DIR}/3.3a.tmux.conf ${DIR}/../.tmux.conf
-ln -s ${DIR}/.vimrc ${DIR}/../.vimrc
-ln -s ${DIR}/.vimrc ${DIR}/../.vim/init.vim
+ln -s ${DIR}/.tmux.conf ${DIR}/../.tmux.conf
+mkdir -p ~/.config/fish
 ln -s ${DIR}/config.fish ${DIR}/.config/fish/config.fish
-
-
-# Install vim theme solarized
-source ${DIR}/install_pathogen.sh
-source ${DIR}/install_solarized.sh
-
-cd ${DIR}/../.vim/bundle
-#git clone https://github.com/yhat/vim-docstring.git
+mkdir -p ~/.config/lvim/
+ln -s ${DIR}/lvim_config.lua ~/.config/lvim/config.lua
 
 cd $DIR
 
 # setup default git
-git config --global user.email "adam.romlein@kitware.com"
+git config --global user.email "adam.romlein@gmail.com"
 git config --global user.name  "Adam Romlein"

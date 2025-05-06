@@ -17,6 +17,6 @@ alias mux="tmuxinator"
 alias ssh='ssh -A'
 alias podman-compose='podman-compose --podman-run-args="--group-add keep-groups"'
 alias cat='bat --paging=never --style=plain'
-alias vim='nvim'
+alias vim='lvim'
 
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"

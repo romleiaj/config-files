@@ -3,9 +3,7 @@ set -e
 # Idempotent (ish)
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-echo "Adding neovim stable repo."
-sudo add-apt-repository ppa:neovim-ppa/stable
+cd $DIR
 
 echo "Setting up node.js"
 sudo bash ${DIR}/nodesource_setup.sh
@@ -15,9 +13,9 @@ echo "Installing essential apt packages."
 sudo apt-get update && sudo apt-get install -y \
 aptitude \
 htop \
+curl \
 vim \
 git \
-neovim \
 kazam \
 bat \
 caffeine \
@@ -29,12 +27,35 @@ python3-pynvim \
 nodejs \
 ffmpeg \
 geeqie \
-fd-find \
-ripgrep \
 fish
 
-# Tmux and tmuxinator
-# Add tmux package manager
+echo "Installing Nerdfont"
+curl -sS https://webi.sh/nerdfont | sh
+
+echo "Installing neovim and astronvim"
+arch=$(uname -i)
+if [[ $arch == x86_64* ]]; then
+    curl -sSLO https://github.com/neovim/neovim/releases/download/v0.11.1/nvim-linux-x86_64.tar.gz
+    tar -xzvf nvim-linux-x86_64.tar.gz
+    sudo rm -rf /usr/local/share/nvim/runtime /usr/local/bin/nvim
+    sudo cp ./nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+    sudo cp -r ./nvim-linux-x86_64/share/nvim /usr/local/share/
+    git clone --depth 1 https://github.com/AstroNvim/template ~/.config/nvim
+    rm -rf ~/.config/nvim/.git
+    rm -rf ./nvim-linux-x86_64
+elif  [[ $arch == arm* ]]; then
+    curl -sSLO https://github.com/neovim/neovim/releases/download/v0.11.1/nvim-linux-arm64.tar.gz
+    tar -xzvf nvim-linux-arm64.tar.gz
+    sudo rm -rf /usr/local/share/nvim/runtime /usr/local/bin/nvim
+    sudo cp ./nvim-linux-arm64/bin/nvim /usr/local/bin/nvim
+    sudo cp -r ./nvim-linux-arm64/share/nvim /usr/local/share/
+    git clone --depth 1 https://github.com/AstroNvim/template ~/.config/nvim
+    rm -rf ~/.config/nvim/.git
+    rm -rf ./nvim-linux-arm64
+fi
+
+#
+
 echo "Installing tmux package manager"
 if [ ! -d ~/.tmux/plugins/tpm ]; then
     git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
@@ -42,36 +63,25 @@ fi
 
 echo "Installing rust, cargo, tools"
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+cargo install ripgrep
+cargo install fd-find
+cargo install --locked tree-sitter-cli
 
-# Installing tree-sitter with node
 echo "Installing npm tree-sitter"
 npm install tree-sitter
 
-# uv
 echo "Installing uv"
 curl -LsSf https://astral.sh/uv/install.sh | sh
 source $HOME/.local/bin/env
 
-# ruff install
 echo "Installing python tools with uv (ansible, pynvim, ruff"
 uv tool install ruff@latest
 uv tool install ansible@latest
 
-# Fuzzy Find
 echo "Installing fuzzy find"
 if [ ! -d /home/xenos/.fzf ]; then
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
     ~/.fzf/install
-fi
-
-# Nerdfont install
-echo "Installing Nerdfont"
-curl -sS https://webi.sh/nerdfont | sh
-
-# lunarvim install
-echo "Installing LunarVim"
-if [ ! -f /home/xenos/.local/bin/lvim ]; then
-   LV_BRANCH='release-1.4/neovim-0.9' bash <(curl -s https://raw.githubusercontent.com/LunarVim/LunarVim/release-1.4/neovim-0.9/utils/installer/install.sh)
 fi
 
 # Starship install
@@ -89,16 +99,11 @@ if [ ! -f ~/.config/fish/config.fish ]; then
     mkdir -p ~/.config/fish
     ln -s ${DIR}/config.fish ~/.config/fish/config.fish
 fi
-if [ ! -f ~/.config/lvim/config.lua ]; then
-    mkdir -p ~/.config/lvim/
-    ln -s ${DIR}/lvim_config.lua ~/.config/lvim/config.lua
-fi
 if [ ! -f ~/.bash_aliases ]; then
     ln -s ${DIR}/bash_aliases ~/.bash_aliases
 fi
 
 cd $DIR
 
-# setup default git
 git config --global user.email "adam.romlein@gmail.com"
 git config --global user.name  "Adam Romlein"

@@ -37,19 +37,23 @@ arch=$(uname -i)
 if [[ $arch == x86_64* ]]; then
     curl -sSLO https://github.com/neovim/neovim/releases/download/v0.11.1/nvim-linux-x86_64.tar.gz
     tar -xzvf nvim-linux-x86_64.tar.gz
+    rm -rf ${HOME}/.config/nvim
     sudo rm -rf /usr/local/share/nvim/runtime /usr/local/bin/nvim
     sudo cp ./nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
     sudo cp -r ./nvim-linux-x86_64/share/nvim /usr/local/share/
     git clone --depth 1 https://github.com/AstroNvim/template ~/.config/nvim
+    cp $DIR/python-dev.lua ~/.config/nvim/lua/plugins/
     rm -rf ~/.config/nvim/.git
     rm -rf ./nvim-linux-x86_64
 elif  [[ $arch == arm* ]]; then
     curl -sSLO https://github.com/neovim/neovim/releases/download/v0.11.1/nvim-linux-arm64.tar.gz
     tar -xzvf nvim-linux-arm64.tar.gz
+    rm -rf ${HOME}/.config/nvim
     sudo rm -rf /usr/local/share/nvim/runtime /usr/local/bin/nvim
     sudo cp ./nvim-linux-arm64/bin/nvim /usr/local/bin/nvim
     sudo cp -r ./nvim-linux-arm64/share/nvim /usr/local/share/
     git clone --depth 1 https://github.com/AstroNvim/template ~/.config/nvim
+    cp $DIR/python-dev.lua ~/.config/nvim/lua/plugins/
     rm -rf ~/.config/nvim/.git
     rm -rf ./nvim-linux-arm64
 fi
@@ -72,16 +76,16 @@ npm install tree-sitter
 
 echo "Installing uv"
 curl -LsSf https://astral.sh/uv/install.sh | sh
-source $HOME/.local/bin/env
+source $HOME/.bashrc
 
 echo "Installing python tools with uv (ansible, pynvim, ruff"
-uv tool install ruff@latest
-uv tool install ansible@latest
+uv tool install ruff@latest --force
+uv tool install ansible@latest --force
 
 echo "Installing fuzzy find"
 if [ ! -d /home/xenos/.fzf ]; then
-    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-    ~/.fzf/install
+    git clone --depth 1 https://github.com/junegunn/fzf.git ${HOME}/.fzf
+    ${HOME}/.fzf/install
 fi
 
 # Starship install
@@ -93,14 +97,14 @@ fi
 
 echo "Linking configuration files."
 if [ ! -f ~/.tmux.conf ]; then
-    ln -s ${DIR}/.tmux.conf ~/.tmux.conf
+    ln -sf ${DIR}/.tmux.conf ~/.tmux.conf
 fi
 if [ ! -f ~/.config/fish/config.fish ]; then
     mkdir -p ~/.config/fish
-    ln -s ${DIR}/config.fish ~/.config/fish/config.fish
+    ln -sf ${DIR}/config.fish ~/.config/fish/config.fish
 fi
 if [ ! -f ~/.bash_aliases ]; then
-    ln -s ${DIR}/bash_aliases ~/.bash_aliases
+    ln -sf ${DIR}/bash_aliases ~/.bash_aliases
 fi
 
 cd $DIR

@@ -1,6 +1,6 @@
 #!/usr/bin/bash
+#NOTE: Must be run as sudo
 set -e
-# Idempotent (ish)
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd $DIR
@@ -14,11 +14,9 @@ sudo apt-get update && sudo apt-get install -y \
 aptitude \
 htop \
 curl \
-vim \
 git \
-kazam \
 bat \
-caffeine \
+tmux \
 wireguard \
 python3-dev \
 python3-pip \
@@ -26,8 +24,12 @@ python3-setuptools \
 python3-pynvim \
 nodejs \
 ffmpeg \
-geeqie \
-fish
+libclang-dev \
+build-essential \
+geeqie
+
+sudo apt remove -y vim neovim
+sudo apt autoremove -y && sudo apt clean
 
 echo "Installing Nerdfont"
 curl -sS https://webi.sh/nerdfont | sh
@@ -44,8 +46,7 @@ if [[ $arch == x86_64* ]]; then
     git clone --depth 1 https://github.com/AstroNvim/template ~/.config/nvim
     cp $DIR/python-dev.lua ~/.config/nvim/lua/plugins/
     rm -rf ~/.config/nvim/.git
-    rm -rf ./nvim-linux-x86_64
-elif  [[ $arch == arm* ]]; then
+elif  [[ $arch == aarch* ]]; then
     curl -sSLO https://github.com/neovim/neovim/releases/download/v0.11.1/nvim-linux-arm64.tar.gz
     tar -xzvf nvim-linux-arm64.tar.gz
     rm -rf ${HOME}/.config/nvim
@@ -55,8 +56,8 @@ elif  [[ $arch == arm* ]]; then
     git clone --depth 1 https://github.com/AstroNvim/template ~/.config/nvim
     cp $DIR/python-dev.lua ~/.config/nvim/lua/plugins/
     rm -rf ~/.config/nvim/.git
-    rm -rf ./nvim-linux-arm64
 fi
+rm -rf ./nvim-linux*
 
 #
 
@@ -66,7 +67,8 @@ if [ ! -d ~/.tmux/plugins/tpm ]; then
 fi
 
 echo "Installing rust, cargo, tools"
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+. "$HOME/.cargo/env"
 cargo install ripgrep
 cargo install fd-find
 cargo install --locked tree-sitter-cli
@@ -76,24 +78,18 @@ npm install tree-sitter
 
 echo "Installing uv"
 curl -LsSf https://astral.sh/uv/install.sh | sh
-source $HOME/.bashrc
+source $HOME/.local/bin/env
 
 echo "Installing python tools with uv (ansible, pynvim, ruff"
 uv tool install ruff@latest --force
 uv tool install ansible@latest --force
 
 echo "Installing fuzzy find"
-if [ ! -d /home/xenos/.fzf ]; then
+if [ ! -d ${HOME}/.fzf ]; then
     git clone --depth 1 https://github.com/junegunn/fzf.git ${HOME}/.fzf
-    ${HOME}/.fzf/install
+    ${HOME}/.fzf/install --all
 fi
 
-# Starship install
-echo "Installing starship"
-if [ ! -f /usr/local/bin/starship ]; then
-  curl -sS https://starship.rs/install.sh | sh
-  echo "eval "$(starship init bash)"" >> ~/.bashrc
-fi
 
 echo "Linking configuration files."
 if [ ! -f ~/.tmux.conf ]; then

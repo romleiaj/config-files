@@ -16,7 +16,7 @@ alias du='du -ahd 1 | sort -h'
 alias mux="tmuxinator"
 alias ssh='ssh -A'
 alias podman-compose='podman-compose --podman-run-args="--group-add keep-groups"'
-alias cat='bat --paging=never --style=plain'
+alias cat='batcat --paging=never --style=plain'
 alias vim='nvim'
 
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"

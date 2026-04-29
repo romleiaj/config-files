@@ -8,11 +8,19 @@ cd $DIR
 echo "Setting up node.js"
 sudo bash ${DIR}/nodesource_setup.sh
 
+echo "Setting up cmake keys"
+wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc | \
+  sudo apt-key add -
+echo "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main" | \
+  sudo tee /etc/apt/sources.list.d/kitware.list
+
+
 echo "Installing essential apt packages."
 # Install some basic packages guaranteed to be used
 sudo apt-get update && sudo apt-get install -y \
 aptitude \
 htop \
+cmake \
 curl \
 git \
 bat \

@@ -95,10 +95,6 @@ echo "Linking configuration files."
 if [ ! -f ~/.tmux.conf ]; then
     ln -sf ${DIR}/.tmux.conf ~/.tmux.conf
 fi
-if [ ! -f ~/.config/fish/config.fish ]; then
-    mkdir -p ~/.config/fish
-    ln -sf ${DIR}/config.fish ~/.config/fish/config.fish
-fi
 if [ ! -f ~/.bash_aliases ]; then
     ln -sf ${DIR}/bash_aliases ~/.bash_aliases
 fi

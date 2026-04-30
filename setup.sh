@@ -98,6 +98,17 @@ if [ ! -d ${HOME}/.fzf ]; then
     ${HOME}/.fzf/install --all
 fi
 
+echo "Checking for and optionally installing docker"
+if command -v docker &>/dev/null; then
+    echo "Docker found, not installing"
+else
+    echo "Docker not found, installing"
+    bash ${DIR}/get-docker.sh
+fi
+sudo groupadd docker
+sudo usermod -aG docker $USER
+newgrp docker
+
 
 echo "Linking configuration files."
 if [ ! -f ~/.tmux.conf ]; then

@@ -9,11 +9,10 @@ echo "Setting up node.js"
 sudo bash ${DIR}/nodesource_setup.sh
 
 echo "Setting up cmake keys"
-wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc | \
-  sudo apt-key add -
-echo "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main" | \
-  sudo tee /etc/apt/sources.list.d/kitware.list
-
+wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null \
+  | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
+echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ noble main' \
+  | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
 
 echo "Installing essential apt packages."
 # Install some basic packages guaranteed to be used
@@ -23,7 +22,6 @@ htop \
 cmake \
 curl \
 git \
-bat \
 tmux \
 wireguard \
 python3-dev \
@@ -67,8 +65,6 @@ elif  [[ $arch == aarch* ]]; then
 fi
 rm -rf ./nvim-linux*
 
-#
-
 echo "Installing tmux package manager"
 if [ ! -d ~/.tmux/plugins/tpm ]; then
     git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
@@ -77,20 +73,20 @@ fi
 echo "Installing rust, cargo, tools"
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 . "$HOME/.cargo/env"
+rustup toolchain install stable
 cargo install ripgrep
 cargo install fd-find
-cargo install --locked tree-sitter-cli
 
 echo "Installing npm tree-sitter"
 npm install tree-sitter
 
 echo "Installing uv"
 curl -LsSf https://astral.sh/uv/install.sh | sh
-source $HOME/.local/bin/env
+uv generate-shell-completion bash
+echo 'eval "$(uv generate-shell-completion bash)"' >> ~/.bashrc
 
-echo "Installing python tools with uv (ansible, pynvim, ruff"
+echo "Installing ruff with uv"
 uv tool install ruff@latest --force
-uv tool install ansible@latest --force
 
 echo "Installing fuzzy find"
 if [ ! -d ${HOME}/.fzf ]; then
@@ -105,10 +101,9 @@ else
     echo "Docker not found, installing"
     bash ${DIR}/get-docker.sh
 fi
-sudo groupadd docker
+echo "Creating docker group"
+sudo groupadd -f docker
 sudo usermod -aG docker $USER
-newgrp docker
-
 
 echo "Linking configuration files."
 if [ ! -f ~/.tmux.conf ]; then
